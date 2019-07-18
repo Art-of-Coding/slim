@@ -1,7 +1,7 @@
 'use strict'
 
 import { Context, MiddlewareFunction, compose } from '@art-of-coding/lime-compose'
-import { IncomingMessage, ServerResponse } from 'http'
+import { IncomingMessage, ServerResponse, STATUS_CODES } from 'http'
 import { Stream } from 'stream'
 
 import Request from './Request'
@@ -66,15 +66,16 @@ export class Application {
     }
   }
 
-  private async _respond (ctx: HttpContext) {
+  private async _respond (ctx: HttpContext<State>) {
     if (!ctx.respond || !ctx.raw.res.writable) {
       return
     }
 
     const { res } = ctx
+    let body = res.json || res.body
 
     if (!res.statusCode) {
-      if (res.body) {
+      if (body) {
         // Default to 200 OK
         res.statusCode = 200
       } else {
@@ -87,11 +88,11 @@ export class Application {
       res.raw.writeHead(res.statusCode, res.headers.toObject())
     }
 
-    if (res.body) {
-      if (res.body instanceof Stream) {
-        res.body.pipe(res.raw)
+    if (body) {
+      if (body instanceof Stream) {
+        body.pipe(res.raw)
       } else {
-        res.raw.write(res.body, () => res.raw.end())
+        res.raw.write(body, () => res.raw.end())
       }
     } else {
       res.raw.end()

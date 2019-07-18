@@ -11,6 +11,7 @@ export class Response {
 
   private _statusCode: number
   private _body: any = null
+  private _json: any = null
 
   public constructor (res: ServerResponse) {
     this.raw = res
@@ -32,7 +33,14 @@ export class Response {
     return this._body
   }
 
+  public get json () {
+    return this._json
+  }
+
   public set body (body: any) {
+    // Reset json
+    this._json = null
+
     // Convert number to string
     if (!isNaN(body)) {
       body = String(body)
@@ -50,12 +58,12 @@ export class Response {
       this.headers.set('Content-Length', body.byteLength)
     } else if (body instanceof Stream) {
       this.headers.setIfNotSet('Content-Type', 'application/octet-stream')
-      this.headers.set('Transfer-Encoding', 'chunked')
+      this.headers.setIfNotSet('Transfer-Encoding', 'chunked')
     } else {
       try {
-        const json = JSON.stringify(body)
+        this._json = JSON.stringify(body)
         this.headers.setIfNotSet('Content-Type', 'application/json')
-        this.headers.set('Content-Length', Buffer.byteLength(json))
+        this.headers.set('Content-Length', Buffer.byteLength(this._json))
       } catch (e) {
         throw new Error('unable to parse body')
       }
