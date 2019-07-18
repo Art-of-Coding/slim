@@ -29,12 +29,16 @@ export class Response {
     return this._statusCode ? STATUS_CODES[this._statusCode] : undefined
   }
 
-  public get body () {
-    return this._body
+  public get headersSent () {
+    return this.raw.headersSent
   }
 
   public get json () {
     return this._json
+  }
+
+  public get body () {
+    return this._body
   }
 
   public set body (body: any) {
@@ -58,7 +62,9 @@ export class Response {
       this.headers.set('Content-Length', body.byteLength)
     } else if (body instanceof Stream) {
       this.headers.setIfNotSet('Content-Type', 'application/octet-stream')
-      this.headers.setIfNotSet('Transfer-Encoding', 'chunked')
+      if (!this.headers.has('Content-Length')) {
+        this.headers.set('Transfer-Encoding', 'chunked')
+      }
     } else {
       try {
         this._json = JSON.stringify(body)
@@ -70,6 +76,21 @@ export class Response {
     }
 
     this._body = body
+  }
+
+  public async write (chunk: any) {
+    return new Promise<void>((resolve, reject) => {
+      this.raw.write(chunk, (err => {
+        if (err) return reject(err)
+        resolve()
+      }))
+    })
+  }
+
+  public async end () {
+    return new Promise<void>(resolve => {
+      this.raw.end(resolve)
+    })
   }
 }
 

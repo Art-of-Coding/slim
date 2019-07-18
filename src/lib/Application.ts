@@ -84,7 +84,7 @@ export class Application {
       }
     }
 
-    if (!res.raw.headersSent) {
+    if (!res.headersSent) {
       res.raw.writeHead(res.statusCode, res.headers.toObject())
     }
 
@@ -92,10 +92,13 @@ export class Application {
       if (body instanceof Stream) {
         body.pipe(res.raw)
       } else {
-        res.raw.write(body, () => res.raw.end())
+        // res.raw.write(body, () => res.raw.end())
+        await res.write(body)
+        await res.end()
       }
     } else {
-      res.raw.end()
+      // res.raw.end()
+      await res.end()
     }
   }
 }
