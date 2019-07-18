@@ -1,6 +1,6 @@
 'use strict'
 
-import { ServerResponse } from 'http'
+import { ServerResponse, STATUS_CODES } from 'http'
 import { Stream } from 'stream'
 
 import HeaderMap from './HeaderMap'
@@ -25,7 +25,7 @@ export class Response {
   }
 
   public get statusMessage () {
-    return 'OK'
+    return this._statusCode ? STATUS_CODES[this._statusCode] : undefined
   }
 
   public get body () {
