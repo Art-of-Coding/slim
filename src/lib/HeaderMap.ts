@@ -3,7 +3,7 @@
 export class HeaderMap extends Map<string, string | number> {
   public static capitalize (key: string) {
     return key.split('-').map(k => {
-      return `${k.substr(0, 1).toUpperCase()}${k.substr(1)}`
+      return `${k[0].toUpperCase()}${k.substr(1)}`
     }).join('-')
   }
 
@@ -25,9 +25,8 @@ export class HeaderMap extends Map<string, string | number> {
   }
 
   public setIfNotSet (key: string, value: string | number) {
-    key = key.toLowerCase()
-    if (!super.has(key)) {
-      super.set(key, value)
+    if (!this.has(key)) {
+      this.set(key, value)
     }
     return this
   }
@@ -36,7 +35,7 @@ export class HeaderMap extends Map<string, string | number> {
     const obj: { [x: string]: string | number } = {}
 
     for (let [ key, value ] of this.entries()) {
-      obj[key] = value
+      obj[HeaderMap.capitalize(key)] = value
     }
 
     return obj

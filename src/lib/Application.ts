@@ -7,8 +7,13 @@ import { Stream } from 'stream'
 import Request from './Request'
 import Response from './Response'
 
-export interface HttpContext<S = { [x:string]: any }> extends Context {
+export interface State {
+  [x: string]: any
+}
+
+export interface HttpContext<S = State> extends Context {
   respond: boolean,
+  app: Application,
   req: Request,
   res: Response,
   state: S,
@@ -33,12 +38,17 @@ export class Application {
     return this
   }
 
+  public compose () {
+    return compose(...this._stack)
+  }
+
   public callback () {
     const middleware = compose(...this._stack)
 
     return async (req: IncomingMessage, res: ServerResponse) => {
       const ctx: HttpContext = {
         respond: true,
+        app: this,
         state: {},
         req: new Request(req),
         res: new Response(res),
@@ -63,12 +73,19 @@ export class Application {
 
     const { res } = ctx
 
-    // Default to 404 Not Found
     if (!res.statusCode) {
-      res.statusCode = 404
+      if (res.body) {
+        // Default to 200 OK
+        res.statusCode = 200
+      } else {
+        // Default to 404 Not Found
+        res.statusCode = 404
+      }
     }
 
-    res.raw.writeHead(res.statusCode, res.headers.toObject())
+    if (!res.raw.headersSent) {
+      res.raw.writeHead(res.statusCode, res.headers.toObject())
+    }
 
     if (res.body) {
       if (res.body instanceof Stream) {

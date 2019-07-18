@@ -33,24 +33,29 @@ export class Response {
   }
 
   public set body (body: any) {
+    // Convert number to string
+    if (!isNaN(body)) {
+      body = String(body)
+    }
+
     if (body === null) {
       this.headers.delete('Content-Type')
       this.headers.delete('Content-Length')
       this.headers.delete('Transfer-Encoding')
     } else if (typeof body === 'string') {
       this.headers.setIfNotSet('Content-Type', 'text/plain')
-      this.headers.setIfNotSet('Content-Length', Buffer.byteLength(body))
+      this.headers.set('Content-Length', Buffer.byteLength(body))
     } else if (Buffer.isBuffer(body)) {
       this.headers.setIfNotSet('Content-Type', 'application/octet-stream')
-      this.headers.setIfNotSet('Content-Length', body.byteLength)
+      this.headers.set('Content-Length', body.byteLength)
     } else if (body instanceof Stream) {
-      this.headers.set('Content-Type', 'application/octet-stream')
+      this.headers.setIfNotSet('Content-Type', 'application/octet-stream')
       this.headers.set('Transfer-Encoding', 'chunked')
     } else {
       try {
-        body = JSON.stringify(body)
+        const json = JSON.stringify(body)
         this.headers.setIfNotSet('Content-Type', 'application/json')
-        this.headers.setIfNotSet('Content-Length', Buffer.byteLength(body))
+        this.headers.set('Content-Length', Buffer.byteLength(json))
       } catch (e) {
         throw new Error('unable to parse body')
       }
