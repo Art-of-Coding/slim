@@ -1,0 +1,28 @@
+{
+  "name": "@art-of-coding/slim",
+  "version": "0.0.1",
+  "private": true,
+  "description": "A small web framework with async middleware",
+  "main": "./dist/index.js",
+  "author": "Michiel van der Velde <michiel@michielvdvelde.nl>",
+  "homepage": "https://github.com/Art-of-Coding/slim",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Art-of-Coding/slim"
+  },
+  "files": [
+    "dist"
+  ],
+  "engines": {
+    "node": ">=7.6.0"
+  },
+  "keywords": [],
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^12.6.8",
+    "typescript": "^3.5.3"
+  },
+  "dependencies": {
+    "@art-of-coding/lime-compose": "0.0.4"
+  }
+}
