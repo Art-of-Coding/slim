@@ -3,15 +3,12 @@
 import { ServerResponse, STATUS_CODES } from 'http'
 import { Stream } from 'stream'
 
-import HeaderMap from './HeaderMap'
-
 export class Response {
   public readonly raw: ServerResponse
-  public readonly headers = new HeaderMap()
 
   private _statusCode: number
   private _body: any = null
-  private _json: any = null
+  private _json: string = null
 
   public constructor (res: ServerResponse) {
     this.raw = res
@@ -34,6 +31,8 @@ export class Response {
   }
 
   public get json () {
+    // NOTE: this returns the stringified version
+    // For the original object/array, use this.body
     return this._json
   }
 
@@ -51,31 +50,61 @@ export class Response {
     }
 
     if (body === null) {
-      this.headers.delete('Content-Type')
-      this.headers.delete('Content-Length')
-      this.headers.delete('Transfer-Encoding')
+      this.remove('Content-Type')
+      this.remove('Transfer-Encoding')
+      this.set('Content-Length', 0)
     } else if (typeof body === 'string') {
-      this.headers.setIfNotSet('Content-Type', 'text/plain')
-      this.headers.set('Content-Length', Buffer.byteLength(body))
+      this.setIfNotSet('Content-Type', 'text/plain')
+      this.set('Content-Length', Buffer.byteLength(body))
     } else if (Buffer.isBuffer(body)) {
-      this.headers.setIfNotSet('Content-Type', 'application/octet-stream')
-      this.headers.set('Content-Length', body.byteLength)
+      this.setIfNotSet('Content-Type', 'application/octet-stream')
+      this.set('Content-Length', body.byteLength)
     } else if (body instanceof Stream) {
-      this.headers.setIfNotSet('Content-Type', 'application/octet-stream')
-      if (!this.headers.has('Content-Length')) {
-        this.headers.set('Transfer-Encoding', 'chunked')
+      this.setIfNotSet('Content-Type', 'application/octet-stream')
+      if (!this.has('Content-Length')) {
+        this.set('Transfer-Encoding', 'chunked')
       }
     } else {
       try {
         this._json = JSON.stringify(body)
-        this.headers.setIfNotSet('Content-Type', 'application/json')
-        this.headers.set('Content-Length', Buffer.byteLength(this._json))
+        this.set('Content-Type', 'application/json')
+        this.set('Content-Length', Buffer.byteLength(this._json))
       } catch (e) {
         throw new Error('unable to parse body')
       }
     }
 
     this._body = body
+  }
+
+  public has (key: string) {
+    return this.raw.hasHeader(key)
+  }
+
+  public get (key: string) {
+    return this.raw.getHeader(key)
+  }
+
+  public set (key: string, value: string | number) {
+    this.raw.setHeader(key, value)
+    return this
+  }
+
+  // Shortcut method to set header if no value has been set yet
+  public setIfNotSet (key: string, value: string | number) {
+    if (!this.has(key)) {
+      this.set(key, value)
+    }
+  }
+
+  public remove (key: string) {
+    this.raw.removeHeader(key)
+  }
+
+  public removeAll () {
+    for (let key in this.raw.getHeaderNames()) {
+      this.raw.removeHeader(key)
+    }
   }
 
   public async write (chunk: any) {

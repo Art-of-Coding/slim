@@ -1,7 +1,7 @@
 'use strict'
 
 import { Context, MiddlewareFunction, compose } from '@art-of-coding/lime-compose'
-import { IncomingMessage, ServerResponse, STATUS_CODES } from 'http'
+import { IncomingMessage, ServerResponse } from 'http'
 import { Stream } from 'stream'
 
 import Request from './Request'
@@ -46,33 +46,43 @@ export class Application {
     const middleware = compose(...this._stack)
 
     return async (req: IncomingMessage, res: ServerResponse) => {
-      const ctx: HttpContext = {
-        respond: true,
-        app: this,
-        state: {},
-        req: new Request(req),
-        res: new Response(res),
-        raw: { req, res }
-      }
+      const ctx = this.createContext(req, res)
 
       try {
         await middleware(ctx)
       } catch (e) {
         // TODO: rethrow error (?)
         ctx.res.statusCode = 500
+        ctx.res.set('Connection', 'close')
+
+        if (!ctx.res.body) {
+          ctx.res.removeAll()
+          ctx.res.set('Content-Length', 0)
+        }
       }
 
-      await this._respond(ctx)
+      await this.respond(ctx)
     }
   }
 
-  private async _respond (ctx: HttpContext<State>) {
+  public createContext (req: IncomingMessage, res: ServerResponse, respond = true): HttpContext {
+    return {
+      respond,
+      app: this,
+      state: {},
+      req: new Request(req),
+      res: new Response(res),
+      raw: { req, res }
+    }
+  }
+
+  public async respond (ctx: HttpContext) {
     if (!ctx.respond || !ctx.raw.res.writable) {
       return
     }
 
     const { res } = ctx
-    let body = res.json || res.body
+    const body = res.json || res.body
 
     if (!res.statusCode) {
       if (body) {
@@ -85,19 +95,18 @@ export class Application {
     }
 
     if (!res.headersSent) {
-      res.raw.writeHead(res.statusCode, res.headers.toObject())
+      // NOTE: Headers up to this point are qeued and sent
+      res.raw.writeHead(res.statusCode)
     }
 
     if (body) {
       if (body instanceof Stream) {
         body.pipe(res.raw)
       } else {
-        // res.raw.write(body, () => res.raw.end())
         await res.write(body)
         await res.end()
       }
     } else {
-      // res.raw.end()
       await res.end()
     }
   }
