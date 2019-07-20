@@ -24,7 +24,7 @@ const app1 = new Slim()
 const app2 = new Slim()
 
 app1.use(
-  select('example.com', app2),
+  vhost('example.com', app2),
   async ctx => {
     ctx.res.statusCode = 404
     cts.res.body = `Not Found`
