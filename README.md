@@ -6,7 +6,10 @@ an eventual publish on npm.
 
 Slim is heavily inspired by [Koa](https://koajs.com/).
 
-## Example with Node's HTTP server
+**Note**: This is currently a work-in-progress and as such may not work as intended,
+and (breaking) API changes are frequent.
+
+### Example with Node's HTTP server
 
 ```ts
 import { createServer } from 'http'
