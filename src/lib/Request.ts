@@ -7,6 +7,8 @@ export class Request {
   public readonly originalUrl: string
   public readonly url: URL
 
+  public params: { [x: string]: string | number } = {}
+
   public constructor (req: IncomingMessage) {
     this.raw = req
     this.originalUrl = req.url

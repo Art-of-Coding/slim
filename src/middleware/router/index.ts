@@ -16,6 +16,10 @@ export class Router {
   public set (method: string, path: string, ...middleware: MiddlewareFunction<HttpContext>[]) {
     method = method.toUpperCase()
 
+    if (path[0] !== '/') {
+      throw new TypeError('path should start with a /')
+    }
+
     if (!this._routes.has(path)) {
       this._routes.set(path, new Map())
     }
@@ -61,16 +65,44 @@ export class Router {
     return this.set('PATCH', path, ...middleware)
   }
 
+  public match (pathname: string) {
+    let match: string | false = false
+    let params: { [x: string]: string | number } = {}
+
+    const splitPath = pathname.split('/')
+    for (let [ route, ] of this._routes) {
+      const splitRoute = route.split('/')
+
+      if (splitRoute.length === splitPath.length) {
+        match = route
+
+        if (route.includes('/:')) {
+          for (let i = 0; i < splitRoute.length; i++) {
+            if (splitRoute[i].startsWith(':')) {
+              params[splitRoute[i].substr(1)] = splitPath[i]
+            }
+          }
+        }
+
+        break
+      }
+    }
+
+    return { match, params }
+  }
+
   public middleware () {
     return async (ctx: HttpContext, next: NextFunction) => {
-      const pathname = ctx.req.pathname
+      const { pathname, method } = ctx.req
+      const match = this.match(pathname)
 
-      if (this._routes.has(pathname)) {
-        const route = this._routes.get(pathname)
+      if (match.match && typeof match.match === 'string') {
+        const route = this._routes.get(match.match)
 
-        if (route.has(ctx.req.method)) {
+        if (route.has(method)) {
+          ctx.req.params = match.params
           // Run the route middleware
-          await route.get(ctx.req.method).compose()(ctx)
+          await route.get(method).compose()(ctx)
         } else {
           // No valid method for this route
           if (this._respondWith405) {
