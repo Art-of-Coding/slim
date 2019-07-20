@@ -1,7 +1,7 @@
 'use strict'
 
 import { Context, MiddlewareFunction, compose } from '@art-of-coding/lime-compose'
-import { IncomingMessage, ServerResponse, STATUS_CODES } from 'http'
+import { IncomingMessage, ServerResponse } from 'http'
 import { Stream } from 'stream'
 
 import Request from './Request'
@@ -25,11 +25,14 @@ export interface HttpContext<S = State> extends Context {
 
 export class Application {
   private _stack: MiddlewareFunction<HttpContext>[] = []
+  private _composed: MiddlewareFunction<HttpContext> = null
 
   public use (...middlewares: MiddlewareFunction<HttpContext>[]) {
     if (!middlewares.length) {
       throw new TypeError('use() expects at least one argument')
     }
+
+    this._composed = null
 
     for (let middleware of middlewares) {
       this._stack.push(middleware)
@@ -39,7 +42,11 @@ export class Application {
   }
 
   public compose () {
-    return compose(...this._stack)
+    if (!this._composed) {
+      this._composed = compose(...this._stack)
+    }
+
+    return this._composed
   }
 
   public callback () {

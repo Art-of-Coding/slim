@@ -19,7 +19,10 @@ export class Response {
   }
 
   public set statusCode (code: number) {
-    this._statusCode = code
+    // Only allow setting status code if headers are not sent yet
+    if (!this.raw.headersSent) {
+      this._statusCode = code
+    }
   }
 
   public get statusMessage () {
