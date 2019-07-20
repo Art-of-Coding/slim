@@ -50,9 +50,8 @@ export class Application {
   }
 
   public callback () {
-    const middleware = this.compose()
-
     return async (req: IncomingMessage, res: ServerResponse) => {
+      const middleware = this.compose()
       const ctx = this.createContext(req, res)
 
       try {
