@@ -1,7 +1,7 @@
 'use strict'
 
 import { Context, MiddlewareFunction, compose } from '@art-of-coding/lime-compose'
-import { IncomingMessage, ServerResponse } from 'http'
+import { IncomingMessage, ServerResponse, STATUS_CODES } from 'http'
 import { Stream } from 'stream'
 
 import Request from './Request'
@@ -43,7 +43,7 @@ export class Application {
   }
 
   public callback () {
-    const middleware = compose(...this._stack)
+    const middleware = this.compose()
 
     return async (req: IncomingMessage, res: ServerResponse) => {
       const ctx = this.createContext(req, res)
@@ -104,11 +104,10 @@ export class Application {
         body.pipe(res.raw)
       } else {
         await res.write(body)
-        await res.end()
       }
-    } else {
-      await res.end()
     }
+
+    await res.end()
   }
 }
 

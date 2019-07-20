@@ -61,13 +61,14 @@ export class Response {
       this.set('Content-Length', body.byteLength)
     } else if (body instanceof Stream) {
       this.setIfNotSet('Content-Type', 'application/octet-stream')
-      if (!this.has('Content-Length')) {
+      if (!this.has('Content-Length') || this.get('Content-Length') === 0) {
+        this.remove('Content-Length')
         this.set('Transfer-Encoding', 'chunked')
       }
     } else {
       try {
         this._json = JSON.stringify(body)
-        this.set('Content-Type', 'application/json')
+        this.setIfNotSet('Content-Type', 'application/json')
         this.set('Content-Length', Buffer.byteLength(this._json))
       } catch (e) {
         throw new Error('unable to parse body')
@@ -107,7 +108,7 @@ export class Response {
     }
   }
 
-  public async write (chunk: any) {
+  public async write (chunk: Buffer | string) {
     return new Promise<void>((resolve, reject) => {
       this.raw.write(chunk, (err => {
         if (err) return reject(err)

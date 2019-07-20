@@ -1,1 +1,1 @@
-export { Application as Slim } from './lib/Application'
+export { Application as Slim, Application as default } from './lib/Application'

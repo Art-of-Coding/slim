@@ -18,7 +18,7 @@ const app = new Slim()
 // Add middleware
 app.use(
   async (ctx, next) => {
-    if (ctx.raw.req.url === '/go-to-github') {
+    if (ctx.req.pathname === '/go-to-github') {
       ctx.res.statusCode = 302
       ctx.res.set('Location', 'http://github.com')
       ctx.res.body = 'Redirecting to Github...'
