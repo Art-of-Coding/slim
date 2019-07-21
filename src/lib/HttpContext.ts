@@ -19,11 +19,11 @@ export interface HttpContext<S = State> extends Context {
   }
 }
 
-export function createContext (req: IncomingMessage, res: ServerResponse, respond = true): HttpContext {
+export function createContext (req: IncomingMessage, res: ServerResponse, respond = true, state: { [x: string]: any } = {}): HttpContext {
   return {
     respond,
     app: this,
-    state: {},
+    state: state,
     req: new Request(req),
     res: new Response(res),
     raw: { req, res }
