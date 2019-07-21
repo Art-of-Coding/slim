@@ -72,10 +72,10 @@ export class Router {
 
   public match (pathname: string) {
     let match: string | false = false
-    let params: { [x: string]: string | number } = {}
+    let params: { [x: string]: string } = {}
 
     const splitPath = pathname.split('/')
-    for (let [ route, ] of this._routes) {
+    for (let route of this._routes.keys()) {
       const splitRoute = route.split('/')
 
       if (splitRoute.length === splitPath.length) {
@@ -105,7 +105,10 @@ export class Router {
         const route = this._routes.get(match.match)
 
         if (route.has(method)) {
-          ctx.req.params = match.params
+          if (Object.keys(match.params).length) {
+            // Only add params if there are actual params
+            ctx.req.params = match.params
+          }
           // Run the route middleware
           await route.get(method).compose()(ctx)
         } else {
