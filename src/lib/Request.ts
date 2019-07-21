@@ -7,24 +7,24 @@ export class Request {
   public readonly originalUrl: string
   public readonly url: URL
 
-  public params: { [x: string]: string | number } = {}
+  public params: { [x: string]: string } = {}
 
   public constructor (req: IncomingMessage) {
     this.raw = req
     this.originalUrl = req.url
 
-    const protocol = this.secure ? 'https' : 'http'
+    const protocol = this.encrypted ? 'https' : 'http'
     this.url = new URL(`${protocol}://${this.host}${req.url}`)
   }
 
-  public get secure () {
+  public get encrypted () {
     // @ts-ignore
     // NOTE: TS node types do not include `encrypted`
     return <boolean>this.raw.connection.encrypted
   }
 
   public get protocol () {
-    return this.url.protocol || this.secure ? 'https' : 'http'
+    return this.url.protocol || this.encrypted ? 'https' : 'http'
   }
 
   public get method () {
