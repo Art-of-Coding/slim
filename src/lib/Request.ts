@@ -14,7 +14,7 @@ export class Request {
     this.originalUrl = req.url
 
     const protocol = this.secure ? 'https' : 'http'
-    this.url = new URL(`${protocol}://${this.host || 'localhost'}${req.url}`)
+    this.url = new URL(`${protocol}://${this.host}${req.url}`)
   }
 
   public get secure () {
