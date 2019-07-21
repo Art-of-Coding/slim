@@ -5,11 +5,16 @@ import { MiddlewareFunction, NextFunction } from '@art-of-coding/lime-compose'
 
 export class Router {
   private _respondWith405 = false
+  private _respondWith501 = false
   private _routes: Map<string, Map<string, Slim>> = new Map()
 
-  public constructor (options: { respondWith405?: boolean } = {}) {
+  public constructor (options: { respondWith405?: boolean, respondWith501?: boolean } = {}) {
     if (options.respondWith405) {
       this._respondWith405 = true
+    }
+
+    if (options.respondWith501) {
+      this._respondWith501 = true
     }
   }
 
@@ -106,7 +111,7 @@ export class Router {
         } else {
           // No valid method for this route
           if (this._respondWith405) {
-            // Response with 405 Method Not Allowed
+            // Respond with 405 Method Not Allowed
             ctx.res.statusCode = 405
           } else {
             // Continue the middleware stack
@@ -114,8 +119,14 @@ export class Router {
           }
         }
       } else {
-        // No valid route for this path; continue the stack
-        await next()
+        // No valid route for this path
+        if (this._respondWith501) {
+          // Respond with 501 Not Implemented
+          ctx.res.statusCode = 501
+        } else {
+          // Continue the middleware stack
+          await next()
+        }
       }
     }
   }
