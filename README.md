@@ -9,7 +9,7 @@ Slim is heavily inspired by [Koa](https://koajs.com/).
 **Note**: This is currently a work-in-progress and as such may not work as intended,
 and (breaking) API changes are frequent.
 
-### Example with Node's HTTP server
+### Example
 
 ```ts
 import { createServer } from 'http'
@@ -35,12 +35,20 @@ app.use(
   }
 )
 
-// Create the server
-const server = createServer(app.callback())
-
-// Start the server
-server.listen(3000)
+// Create the server and listen
+createServer(app.callback()).listen(3000)
 ```
+
+### To Do
+
+This list is incomplete.
+
+ * Supply API documentation
+ * Support `100 Continue` (and thus `Expect: 100-Continue`)
+ * Support HTTP Trailers
+ * Support content type setters (e.g. `res.type = 'xml'`) and checkers
+   (e.g. `req.type('html'): boolean`)
+ * Support accept helpers (e.g. `req.accepts('xml'): boolean`)
 
 ### License
 
