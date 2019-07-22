@@ -6,14 +6,32 @@ import { Stream } from 'stream'
 
 import { HttpContext, createContext } from './HttpContext'
 
+/**
+ * Context state for storing state data within `HttpContext.state`.
+ */
 export interface State {
   [x: string]: any
 }
 
+/**
+ * Represents an middleware application.
+ */
 export class Application {
+  /** The middleware stack. */
   private _stack: MiddlewareFunction<HttpContext>[] = []
+  /** The composed middleware stack (if any). */
   private _composed: MiddlewareFunction<HttpContext> = null
 
+  /**
+   * Use one or more middlewares.
+   * Middlewares are stored and run in the order they are inserted.
+   *
+   * Example:
+   *
+   * ```ts
+   * app.use(middleware1(), middleware2())
+   * ```
+   */
   public use (...middlewares: MiddlewareFunction<HttpContext>[]) {
     if (!middlewares.length) {
       throw new TypeError('use() expects at least one argument')
@@ -28,6 +46,9 @@ export class Application {
     return this
   }
 
+  /**
+   * Compose the middleware stack and return a composed middleware.
+   */
   public compose () {
     if (!this._composed) {
       this._composed = compose(...this._stack)
@@ -36,6 +57,9 @@ export class Application {
     return this._composed
   }
 
+  /**
+   * Return a request handler callback for node's http server.
+   */
   public callback () {
     return async (req: IncomingMessage, res: ServerResponse) => {
       const middleware = this.compose()
@@ -58,6 +82,10 @@ export class Application {
     }
   }
 
+  /**
+   * Respond to the request defined in the context.
+   * This is automatically called by `this.callback()`.
+   */
   public async respond (ctx: HttpContext) {
     if (!ctx.respond || !ctx.raw.res.writable) {
       return
