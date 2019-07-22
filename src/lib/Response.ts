@@ -6,7 +6,6 @@ import { Stream } from 'stream'
 export class Response {
   public readonly raw: ServerResponse
 
-  private _statusCode: number
   /** The response body (if any). */
   private _body: any = null
   private _json: string = null
@@ -17,20 +16,20 @@ export class Response {
 
   /** The response status code. */
   public get statusCode () {
-    return this._statusCode
+    return this.raw.statusCode
   }
 
   /** Set the response status code. */
   public set statusCode (code: number) {
     // Only allow setting status code if headers are not sent yet
     if (!this.raw.headersSent) {
-      this._statusCode = code
+      this.raw.statusCode = code
     }
   }
 
   /** The status message for the status code (e.g. 'Not Found' for code 404). */
   public get statusMessage () {
-    return this._statusCode ? STATUS_CODES[this._statusCode] : undefined
+    return this.statusCode ? STATUS_CODES[this.statusCode] : undefined
   }
 
   /** Whether or not the headers have been sent to the client. */
@@ -63,8 +62,7 @@ export class Response {
     }
 
     if (body === null) {
-      this.remove('Content-Type', 'Transfer-Encoding')
-      this.set('Content-Length', 0)
+      this.remove('Content-Type', 'Transfer-Encoding', 'Content-Length')
     } else if (typeof body === 'string') {
       this.setIfNotSet('Content-Type', 'text/plain')
       this.set('Content-Length', Buffer.byteLength(body))
@@ -73,9 +71,9 @@ export class Response {
       this.set('Content-Length', body.byteLength)
     } else if (body instanceof Stream) {
       this.setIfNotSet('Content-Type', 'application/octet-stream')
+      this.set('Transfer-Encoding', 'chunked')
       if (!this.has('Content-Length') || this.get('Content-Length') === 0) {
         this.remove('Content-Length')
-        this.set('Transfer-Encoding', 'chunked')
       }
     } else {
       try {

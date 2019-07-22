@@ -5,6 +5,7 @@ import { IncomingMessage, ServerResponse } from 'http'
 import { Stream } from 'stream'
 
 import { HttpContext, createContext } from './HttpContext'
+import { empty as emptyStatus } from '../util/statuses'
 
 /**
  * Context state for storing state data within `HttpContext.state`.
@@ -86,13 +87,13 @@ export class Application<S = State> {
    * Respond to the request defined in the context.
    * This is automatically called by `this.callback()`.
    */
-  public async respond<S> (ctx: HttpContext<S>) {
+  public async respond (ctx: HttpContext<S>) {
     if (!ctx.respond || !ctx.raw.res.writable) {
       return
     }
 
     const { res } = ctx
-    const body = res.json || res.body
+    let body = res.json || res.body
 
     if (!res.headersSent) {
       if (!res.statusCode) {
@@ -102,13 +103,15 @@ export class Application<S = State> {
         } else {
           // Default to 404 Not Found
           res.statusCode = 404
+          res.remove('Content-Length', 'Transfer-Encoding')
         }
-
-        res.remove('Transfer-Encoding')
-        res.set('Content-Length', 0)
       }
 
-      res.raw.writeHead(res.statusCode)
+      // Strip body if status code requires an empty body
+      if (emptyStatus[res.statusCode]) {
+        res.body = null
+        body = null
+      }
     }
 
     if (body) {
