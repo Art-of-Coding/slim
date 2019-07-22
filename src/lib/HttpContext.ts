@@ -25,12 +25,13 @@ export interface HttpContext<S = State> extends Context {
 
 /**
  * Create a new `HttpContext`.
+ * @typeparam S         The state definition
  * @param  req          The request object
  * @param  res          The response object
  * @param  respond=true Whether or not to let the app handle response
  * @param  state        Context state
  */
-export function createContext (req: IncomingMessage, res: ServerResponse, respond = true, state: { [x: string]: any } = {}): HttpContext {
+export function createContext<S = State> (req: IncomingMessage, res: ServerResponse, respond = true, state?: S): HttpContext<S> {
   return {
     respond,
     app: this,

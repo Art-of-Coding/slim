@@ -16,11 +16,11 @@ export interface State {
 /**
  * Represents an middleware application.
  */
-export class Application {
+export class Application<S = State> {
   /** The middleware stack. */
-  private _stack: MiddlewareFunction<HttpContext>[] = []
+  private _stack: MiddlewareFunction<HttpContext<S>>[] = []
   /** The composed middleware stack (if any). */
-  private _composed: MiddlewareFunction<HttpContext> = null
+  private _composed: MiddlewareFunction<HttpContext<S>> = null
 
   /**
    * Use one or more middlewares.
@@ -32,7 +32,7 @@ export class Application {
    * app.use(middleware1(), middleware2())
    * ```
    */
-  public use (...middlewares: MiddlewareFunction<HttpContext>[]) {
+  public use (...middlewares: MiddlewareFunction<HttpContext<S>>[]) {
     if (!middlewares.length) {
       throw new TypeError('use() expects at least one argument')
     }
@@ -63,7 +63,7 @@ export class Application {
   public callback () {
     return async (req: IncomingMessage, res: ServerResponse) => {
       const middleware = this.compose()
-      const ctx = createContext(req, res)
+      const ctx = createContext<S>(req, res)
 
       try {
         await middleware(ctx)
@@ -86,7 +86,7 @@ export class Application {
    * Respond to the request defined in the context.
    * This is automatically called by `this.callback()`.
    */
-  public async respond (ctx: HttpContext) {
+  public async respond<S> (ctx: HttpContext<S>) {
     if (!ctx.respond || !ctx.raw.res.writable) {
       return
     }
