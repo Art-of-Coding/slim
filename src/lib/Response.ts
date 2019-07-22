@@ -63,8 +63,7 @@ export class Response {
     }
 
     if (body === null) {
-      this.remove('Content-Type')
-      this.remove('Transfer-Encoding')
+      this.remove('Content-Type', 'Transfer-Encoding')
       this.set('Content-Length', 0)
     } else if (typeof body === 'string') {
       this.setIfNotSet('Content-Type', 'text/plain')
@@ -114,9 +113,11 @@ export class Response {
     }
   }
 
-  /** Remove header `key`. */
-  public remove (key: string) {
-    this.raw.removeHeader(key)
+  /** Remove header(s) `keys`. */
+  public remove (...keys: string[]) {
+    for (let key of keys ) {
+      this.raw.removeHeader(key)
+    }
   }
 
   /** Remove all headers. */
