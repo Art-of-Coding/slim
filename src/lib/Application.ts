@@ -15,7 +15,7 @@ export interface State {
 }
 
 /**
- * Represents an middleware application.
+ * Represents a middleware application.
  */
 export class Application<S = State> {
   /** The middleware stack. */
