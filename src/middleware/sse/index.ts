@@ -47,6 +47,8 @@ export class ServerSentEvents {
       if (!res.headersSent) {
        res.statusCode = 200
        res.body = null
+       res.set('Connection', 'keep-alive')
+       res.set('Cache-Control', 'no-cache')
        res.set('Context-Type', 'text/event-stream')
       }
 
