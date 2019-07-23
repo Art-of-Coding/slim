@@ -71,7 +71,7 @@ export class Application<S extends State = State> {
         await middleware(ctx)
       } catch (e) {
         // TODO: rethrow error (?)
-        if (e instanceof HttpError && e.expose) {
+        if (e instanceof HttpError && (e.statusCode === 404 || e.expose)) {
           ctx.res.statusCode = e.statusCode
           ctx.res.body = e.message
         } else {
@@ -110,8 +110,7 @@ export class Application<S extends State = State> {
 
       // Strip body if status code requires an empty body
       if (emptyStatus[res.statusCode]) {
-        res.body = null
-        body = null
+        res.body = body = null
       }
     }
 
