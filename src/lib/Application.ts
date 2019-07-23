@@ -113,10 +113,10 @@ export class Application<S extends State = State> {
         res.body = body = null
       }
 
-      if (ctx.req.method === 'HEAD' && res.has('Content-Length')) {
-        const length = <number>res.get('Content-Length')
+      if (ctx.req.method === 'HEAD') {
+        const contentLength = <number>res.get('Content-Length') || 0
         res.body = body = null
-        res.set('Content-Length', length)
+        res.set('Content-Length', contentLength)
       }
     }
 
