@@ -44,6 +44,7 @@ createServer(app.callback()).listen(3000)
 This list is incomplete.
 
  * Supply API documentation
+ * Support proxies (e.g. `X-Forwarded-For`)
  * Support `100 Continue` (and thus `Expect: 100-Continue`)
  * Support HTTP Trailers
  * Support content type setters (e.g. `res.type = 'xml'`) and checkers
