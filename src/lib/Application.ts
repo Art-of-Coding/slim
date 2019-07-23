@@ -17,7 +17,7 @@ export interface State {
 /**
  * Represents a middleware application.
  */
-export class Application<S = State> {
+export class Application<S extends State = State> {
   /** The middleware stack. */
   private _stack: MiddlewareFunction<HttpContext<S>>[] = []
   /** The composed middleware stack (if any). */
