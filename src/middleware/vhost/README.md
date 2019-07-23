@@ -7,11 +7,11 @@ Virtual host middleware for [Slim](https://github.com/Art-of-Coding/slim).
 #### vhost
 
 ```ts
-vhost(hostname: string, app: Slim): MiddlewareFunction<HttpContext>
+vhost(hostname: string | RegExp, app: Slim): MiddlewareFunction<HttpContext>
 ```
 
-If the request has the `Host` header set to `hostname`,
-call the middleware stack for the given Slim instance (`app`).
+If the request has the `Host` header set to `hostname` (or the regular expression
+evaluates to `true`), call the middleware stack for the given Slim instance (`app`).
 
 ### Example
 
