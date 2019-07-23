@@ -112,6 +112,12 @@ export class Application<S extends State = State> {
       if (emptyStatus[res.statusCode]) {
         res.body = body = null
       }
+
+      if (ctx.req.method === 'HEAD' && res.has('Content-Length')) {
+        const length = <number>res.get('Content-Length')
+        res.body = body = null
+        res.set('Content-Length', length)
+      }
     }
 
     if (body) {
