@@ -46,10 +46,6 @@ export class Router {
     return this.set('GET', path, ...middleware)
   }
 
-  public head (path: string, ...middleware: MiddlewareFunction<HttpContext>[]) {
-    return this.set('HEAD', path, ...middleware)
-  }
-
   public post (path: string, ...middleware: MiddlewareFunction<HttpContext>[]) {
     return this.set('POST', path, ...middleware)
   }
@@ -60,10 +56,6 @@ export class Router {
 
   public delete (path: string, ...middleware: MiddlewareFunction<HttpContext>[]) {
     return this.set('DELETE', path, ...middleware)
-  }
-
-  public options (path: string, ...middleware: MiddlewareFunction<HttpContext>[]) {
-    return this.set('OPTIONS', path, ...middleware)
   }
 
   public patch (path: string, ...middleware: MiddlewareFunction<HttpContext>[]) {
