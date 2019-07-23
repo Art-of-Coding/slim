@@ -63,20 +63,22 @@ export class Router {
   }
 
   public match (pathname: string) {
-    let match: string | false = false
-    let params: { [x: string]: string } = {}
+    let pathMatch: boolean = false
+    let pathRoute: Map<string, Slim> = null
+    let pathParams: { [x: string]: string } = {}
 
     const splitPath = pathname.split('/')
     for (let route of this._routes.keys()) {
       const splitRoute = route.split('/')
 
       if (splitRoute.length === splitPath.length) {
-        match = route
+        pathMatch = true
+        pathRoute = this._routes.get(route)
 
         if (route.includes('/:')) {
           for (let i = 0; i < splitRoute.length; i++) {
             if (splitRoute[i].startsWith(':')) {
-              params[splitRoute[i].substr(1)] = splitPath[i]
+              pathParams[splitRoute[i].substr(1)] = splitPath[i]
             }
           }
         }
@@ -85,21 +87,23 @@ export class Router {
       }
     }
 
-    return { match, params }
+    return {
+      match: pathMatch,
+      route: pathRoute,
+      params: pathParams
+    }
   }
 
   public middleware () {
     return async (ctx: HttpContext, next: NextFunction) => {
       const { pathname, method } = ctx.req
-      const match = this.match(pathname)
+      const { match, route, params } = this.match(pathname)
 
-      if (match.match && typeof match.match === 'string') {
-        const route = this._routes.get(match.match)
-
+      if (match) {
         if (route.has(method)) {
-          if (Object.keys(match.params).length) {
+          if (Object.keys(params).length) {
             // Only add params if there are actual params
-            ctx.req.params = match.params
+            ctx.req.params = params
           }
           // Run the route middleware
           await route.get(method).compose()(ctx)
