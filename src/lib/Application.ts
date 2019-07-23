@@ -1,11 +1,12 @@
 'use strict'
 
 import { MiddlewareFunction, compose } from '@art-of-coding/lime-compose'
-import { IncomingMessage, ServerResponse } from 'http'
+import { IncomingMessage, ServerResponse, STATUS_CODES } from 'http'
 import { Stream } from 'stream'
 
 import { HttpContext, createContext } from './HttpContext'
 import { empty as emptyStatus } from '../util/statuses'
+import HttpError from '../util/HttpError'
 
 /**
  * Context state for storing state data within `HttpContext.state`.
@@ -70,12 +71,12 @@ export class Application<S extends State = State> {
         await middleware(ctx)
       } catch (e) {
         // TODO: rethrow error (?)
-        ctx.res.statusCode = 500
-        ctx.res.set('Connection', 'close')
-
-        if (!ctx.res.body) {
-          ctx.res.removeAll()
-          ctx.res.set('Content-Length', 0)
+        if (e instanceof HttpError && e.expose) {
+          ctx.res.statusCode = e.statusCode
+          ctx.res.body = e.message
+        } else {
+          ctx.res.statusCode = 500
+          ctx.res.body = null
         }
       }
 
@@ -103,7 +104,7 @@ export class Application<S extends State = State> {
         } else {
           // Default to 404 Not Found
           res.statusCode = 404
-          res.remove('Content-Length', 'Transfer-Encoding')
+          res.body = body = STATUS_CODES[404]
         }
       }
 

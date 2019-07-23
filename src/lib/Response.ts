@@ -21,10 +21,7 @@ export class Response {
 
   /** Set the response status code. */
   public set statusCode (code: number) {
-    // Only allow setting status code if headers are not sent yet
-    if (!this.raw.headersSent) {
-      this.raw.statusCode = code
-    }
+    this.raw.statusCode = code
   }
 
   /** The status message for the status code (e.g. 'Not Found' for code 404). */
@@ -57,7 +54,7 @@ export class Response {
     this._json = null
 
     // Convert number to string
-    if (!isNaN(body)) {
+    if (typeof body === 'number') {
       body = String(body)
     }
 
