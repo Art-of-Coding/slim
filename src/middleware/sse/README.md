@@ -67,7 +67,7 @@ await sse.event('my-event', 'data1', 'data2')
 
 await sse.data('some-data')
 
-await sse.broadcase(': this is a comment\n\n')
+await sse.broadcast(': this is a comment\n\n')
 ```
 
 ### License
