@@ -74,6 +74,12 @@ export class Application<S extends State = State> {
         if (e instanceof HttpError && (e.statusCode === 404 || e.expose)) {
           ctx.res.statusCode = e.statusCode
           ctx.res.body = e.message
+
+          if (e.headers) {
+            for (const [ key, value ] of Object.entries(e.headers)) {
+              ctx.res.set(key, value)
+            }
+          }
         } else {
           ctx.res.statusCode = 500
           ctx.res.body = null
