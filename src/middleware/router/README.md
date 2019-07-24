@@ -59,7 +59,7 @@ router.get(
 // Support for named parameters as well
 router.get(
   '/blog/:id',
-  async ctx => ctx.body = `Article #${ctx.params.id}`
+  async ctx => ctx.body = `Article #${ctx.req.params.id}`
 )
 
 app.use(
