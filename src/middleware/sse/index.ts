@@ -37,6 +37,15 @@ export class ServerSentEvents {
     }
   }
 
+  public add (ctx: HttpContext) {
+    if (ctx.raw.res.writable) {
+      this._clients.add(ctx)
+
+      // NOTE: Consider using `WeakSet`?
+      ctx.raw.res.once('close', () => this._clients.delete(ctx))
+    }
+  }
+
   public middleware (): MiddlewareFunction<HttpContext> {
     return async ctx => {
       // Stop de default response handler
@@ -52,8 +61,7 @@ export class ServerSentEvents {
        res.set('Context-Type', 'text/event-stream')
       }
 
-      this._clients.add(ctx)
-      res.raw.once('close', () => this._clients.delete(ctx))
+      this.add(ctx)
     }
   }
 }
