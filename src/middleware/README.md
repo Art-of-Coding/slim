@@ -11,6 +11,7 @@ upon successful evaluation of the given function.
 * **Vhost** ([readme](./vhost/README.md)) - Virtual host middleware that also
 supports regular expressions
 * **Router** ([readme](./router/README.md)) - Simple router middleware
+**Server Sent Events*** ([readme](./sse/README.md)) - SSE support
 
 ### License
 
