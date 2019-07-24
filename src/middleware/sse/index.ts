@@ -22,6 +22,10 @@ export class ServerSentEvents {
     return this.broadcast(`data: ${data}\n\n`)
   }
 
+  public async comment (comment: string) {
+    return this.broadcast(`; ${comment}\n\n`)
+  }
+
   public async broadcast (message: string) {
     if (!this._clients.size) {
       return
