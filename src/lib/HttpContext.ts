@@ -1,7 +1,7 @@
 'use strict'
 
 import { Context } from '@art-of-coding/lime-compose'
-import Application, { State } from './Application'
+import { State } from './Application'
 import { IncomingMessage, ServerResponse } from 'http'
 
 import Request from './Request'
@@ -13,7 +13,6 @@ import Response from './Response'
  */
 export interface HttpContext<S extends State = State> extends Context {
   respond: boolean,
-  app: Application,
   req: Request,
   res: Response,
   state: S,
@@ -31,14 +30,13 @@ export interface HttpContext<S extends State = State> extends Context {
  * @param  state={}     Context state
  * @param  respond=true Whether or not to let the app handle response
  */
-export function createContext<S extends State = State> (req: IncomingMessage, res: ServerResponse, state: State = {}, respond = true): HttpContext<S> {
+export function createContext<S extends State = State> (req: IncomingMessage, res: ServerResponse, state?: S, respond = true): HttpContext<S> {
   return {
     respond,
-    app: this,
     // NOTE: This feels way to hackey.
     // There must be a better way to have state interfaces/types and
     // a default value (`{}`)
-    state: <any>state,
+    state: state || <any>{},
     req: new Request(req),
     res: new Response(res),
     raw: { req, res }
