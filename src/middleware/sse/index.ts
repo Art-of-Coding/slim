@@ -1,58 +1,109 @@
 'use strict'
 
+import { EventEmitter } from 'events'
 import { HttpContext } from '../../index'
+import { State } from '../../lib/Application'
 import { MiddlewareFunction } from '@art-of-coding/lime-compose'
 
-export class ServerSentEvents {
-  private _clients: Set<HttpContext> = new Set()
+export class ServerSentEvents<S extends State = State> extends EventEmitter {
+  private _clients: Set<HttpContext<S>> = new Set()
 
-  public async event (name: string, ...data: string[]) {
-    let message = `event: ${name}`
+  /**
+   * Send an event `name` to all clients.
+   * @param  name    The name of the event
+   * @param  id      The event id (if any)
+   * @param  ...data The data to append
+   */
+  public async event (name: string, id?: string | number, ...data: string[]) {
+    let message = `event: ${name}\n`
+
+    if (id) {
+      message += `id: ${id}\n`
+    }
 
     if (data.length) {
-      for (let chunk of data) {
-        message += `\ndata: ${chunk}`
+      for (const chunk of data) {
+        message += `data: ${chunk}\n`
       }
     }
 
-    return this.broadcast(`${message}\n\n`)
+    return this.broadcast(`${message}\n`)
   }
 
+  /**
+   * Send data `data` to all clients.
+   * @param  data The data to send
+   */
   public async data (data: string) {
     return this.broadcast(`data: ${data}\n\n`)
   }
 
+  /**
+   * Send a comment to all clients.
+   * @param  comment The comment to send
+   */
   public async comment (comment: string) {
     return this.broadcast(`; ${comment}\n\n`)
   }
 
+  /**
+   * Send `message` to all clients.
+   * @param  message The message to send
+   */
   public async broadcast (message: string) {
     if (!this._clients.size) {
       return
     }
 
-    for (let client of this._clients) {
-      if (!client.raw.res.writable) {
-        this._clients.delete(client)
-        continue
+    for (const client of this._clients) {
+      if (client.raw.res.writable) {
+        await client.res.write(message)
+      } else {
+        this.remove(client)
       }
-
-      await client.res.write(message)
     }
   }
 
-  public add (ctx: HttpContext) {
+  /**
+   * Add a context to the clients list.
+   * @param  ctx The context to add
+   */
+  public add (ctx: HttpContext<S>) {
     if (ctx.raw.res.writable) {
       this._clients.add(ctx)
 
       // NOTE: Consider using `WeakSet`?
-      ctx.raw.res.once('close', () => this._clients.delete(ctx))
+      ctx.raw.res.once('close', () => this.remove(ctx))
+      this.emit('add', ctx)
     }
   }
 
-  public middleware (): MiddlewareFunction<HttpContext> {
+  public remove (ctx: HttpContext<S>) {
+    if (this._clients.delete(ctx)) {
+      this.emit('remove', ctx)
+      return true
+    }
+
+    return false
+  }
+
+  /**
+   * Get the middleware function.
+   *
+   * Example:
+   *
+   * ```ts
+   * const app = new Slim()
+   * const sse = new ServerSentEvents()
+   *
+   * app.use(
+   *   sse.middleware()
+   * )
+   * ```
+   */
+  public middleware (): MiddlewareFunction<HttpContext<S>> {
     return async ctx => {
-      // Stop de default response handler
+      // Stop the default response handler
       ctx.respond = false
 
       const { res } = ctx

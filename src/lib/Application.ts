@@ -70,8 +70,7 @@ export class Application<S extends State = State> {
       try {
         await middleware(ctx)
       } catch (e) {
-        // TODO: rethrow error (?)
-        if (e instanceof HttpError && (e.statusCode === 404 || e.expose)) {
+        if (e instanceof HttpError && e.expose) {
           ctx.res.statusCode = e.statusCode
           ctx.res.body = e.message
 
@@ -81,6 +80,7 @@ export class Application<S extends State = State> {
             }
           }
         } else {
+          // TODO: rethrow error (?)
           ctx.res.statusCode = 500
           ctx.res.body = null
         }
@@ -120,6 +120,7 @@ export class Application<S extends State = State> {
       }
 
       if (ctx.req.method === 'HEAD') {
+        // TODO: Also 'preserve' `Content-Type` header
         const contentLength = <number>res.get('Content-Length') || 0
         res.body = body = null
         res.set('Content-Length', contentLength)

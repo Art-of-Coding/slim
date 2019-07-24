@@ -63,7 +63,7 @@ export class Router {
   }
 
   public match (pathname: string) {
-    let pathMatch: boolean = false
+    let pathMatch = false
     let pathRoute: Map<string, Slim> = null
     let pathParams: { [x: string]: string } = {}
 
@@ -100,7 +100,7 @@ export class Router {
       const { match, route, params } = this.match(pathname)
 
       if (match) {
-        if (route.has(method)) {
+        if (route.has(method === 'HEAD' ? 'GET' : method)) {
           if (Object.keys(params).length) {
             // Only add params if there are actual params
             ctx.req.params = params
