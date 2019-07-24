@@ -41,7 +41,7 @@ export class Application<S extends State = State> {
 
     this._composed = null
 
-    for (let middleware of middlewares) {
+    for (const middleware of middlewares) {
       this._stack.push(middleware)
     }
 

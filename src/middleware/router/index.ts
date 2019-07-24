@@ -68,7 +68,7 @@ export class Router {
     let pathParams: { [x: string]: string } = {}
 
     const splitPath = pathname.split('/')
-    for (let route of this._routes.keys()) {
+    for (const route of this._routes.keys()) {
       const splitRoute = route.split('/')
 
       if (splitRoute.length === splitPath.length) {
