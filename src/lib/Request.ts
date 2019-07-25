@@ -16,8 +16,8 @@ export class Request {
     this.raw = req
     this.originalUrl = req.url
 
-    const protocol = this.encrypted ? 'https:' : 'http:'
-    this.url = new URL(`${protocol}//${this.host}${req.url}`)
+    const protocol = this.encrypted ? 'https' : 'http'
+    this.url = new URL(`${protocol}://${this.host}${req.url}`)
   }
 
   /** Whether or not the connection is encrypted (e.g. HTTPS). */
@@ -27,9 +27,9 @@ export class Request {
     return <boolean>this.raw.connection.encrypted
   }
 
-  /** The protocol (`http:` or `https:`). */
+  /** The protocol (`http` or `https`). */
   public get protocol () {
-    return this.url.protocol || this.encrypted ? 'https:' : 'http:'
+    return this.url.protocol || this.encrypted ? 'https' : 'http'
   }
 
   /** The request method. */

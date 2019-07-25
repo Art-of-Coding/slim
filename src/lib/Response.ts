@@ -139,9 +139,9 @@ export class Response {
    * End the response.
    * This is a Promise-based version of `this.raw.end()`.
    */
-  public async end () {
+  public async end (chunk?: Buffer | string) {
     return new Promise<void>(resolve => {
-      this.raw.end(resolve)
+      this.raw.end(chunk, resolve)
     })
   }
 }

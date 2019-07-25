@@ -120,10 +120,13 @@ export class Application<S extends State = State> {
       }
 
       if (ctx.req.method === 'HEAD') {
-        // TODO: Also 'preserve' `Content-Type` header
         const contentLength = <number>res.get('Content-Length') || 0
+        const contentType = <string>res.get('Content-Type') || undefined
         res.body = body = null
         res.set('Content-Length', contentLength)
+        if (contentType) {
+          res.set('Content-Type', contentType)
+        }
       }
     }
 

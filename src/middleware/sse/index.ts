@@ -78,6 +78,10 @@ export class ServerSentEvents<S extends State = State> extends EventEmitter {
     }
   }
 
+  /**
+   * Remove a context from the clients list.
+   * @param  ctx The context to remove
+   */
   public remove (ctx: HttpContext<S>) {
     if (this._clients.delete(ctx)) {
       this.emit('remove', ctx)
