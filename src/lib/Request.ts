@@ -1,6 +1,7 @@
 'use strict'
 
 import { IncomingMessage } from 'http'
+import { getClientIp as getIp } from 'request-ip'
 
 export class Request {
   /** The original request */
@@ -18,6 +19,10 @@ export class Request {
 
     const protocol = this.encrypted ? 'https' : 'http'
     this.url = new URL(`${protocol}://${this.host}${req.url}`)
+  }
+
+  public get ip () {
+    return getIp(this.raw)
   }
 
   /** Whether or not the connection is encrypted (e.g. HTTPS). */
