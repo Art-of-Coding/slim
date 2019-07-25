@@ -20,9 +20,11 @@
   "license": "MIT",
   "devDependencies": {
     "@types/node": "^12.6.8",
+    "@types/request-ip": "0.0.34",
     "typescript": "^3.5.3"
   },
   "dependencies": {
-    "@art-of-coding/lime-compose": "0.0.4"
+    "@art-of-coding/lime-compose": "0.0.4",
+    "request-ip": "^2.1.3"
   }
 }
