@@ -6,7 +6,15 @@ import { State } from '../../lib/Application'
 import { MiddlewareFunction } from '@art-of-coding/lime-compose'
 
 export class ServerSentEvents<S extends State = State> extends EventEmitter {
+  public readonly statusCode: number
+
   private _clients: Set<HttpContext<S>> = new Set()
+
+  public constructor (statusCode: number = 200) {
+    super()
+
+    this.statusCode = statusCode
+  }
 
   /**
    * Send an event `name` to all clients.

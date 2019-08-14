@@ -130,6 +130,10 @@ export class Application<S extends State = State> {
       }
     }
 
+    if (!res.headersSent) {
+      res.raw.writeHead(res.statusCode)
+    }
+
     if (body) {
       if (body instanceof Stream) {
         body.pipe(res.raw)

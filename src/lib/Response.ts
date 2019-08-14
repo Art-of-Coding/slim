@@ -69,7 +69,7 @@ export class Response {
     } else if (body instanceof Stream) {
       this.setIfNotSet('Content-Type', 'application/octet-stream')
       this.set('Transfer-Encoding', 'chunked')
-      if (!this.has('Content-Length') || this.get('Content-Length') === 0) {
+      if (this.has('Content-Length')) {
         this.remove('Content-Length')
       }
     } else {
