@@ -9,6 +9,12 @@ Slim is heavily inspired by [Koa](https://koajs.com/).
 **Note**: This is currently a work-in-progress and as such may not work as intended,
 and (breaking) API changes are frequent.
 
+### Installation
+
+```
+npm i @art-of-coding/slim
+```
+
 ### Example
 
 ```ts
