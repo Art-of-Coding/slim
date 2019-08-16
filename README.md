@@ -1,8 +1,7 @@
 # Slim
 
 Slim is a small web framework which uses ***async/await*** middleware.
-Only basic functionality has been implemented, and there is no roadmap for
-an eventual publish on npm.
+Only basic functionality has been implemented.
 
 Slim is heavily inspired by [Koa](https://koajs.com/).
 
