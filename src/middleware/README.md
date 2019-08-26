@@ -1,7 +1,7 @@
 # Middleware
 
 **Note:** Eventually these middlewares will be published separately, do not
-depend on these being included bij default!
+depend on these being included by default!
 
 ## List
 
