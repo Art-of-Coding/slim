@@ -18,9 +18,9 @@
   "keywords": [],
   "license": "MIT",
   "devDependencies": {
-    "@types/node": "^12.7.1",
+    "@types/node": "^12.7.12",
     "@types/request-ip": "0.0.34",
-    "typescript": "^3.5.3"
+    "typescript": "^3.6.4"
   },
   "dependencies": {
     "@art-of-coding/lime-compose": "0.0.4",
