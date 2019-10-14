@@ -1,7 +1,7 @@
 'use strict'
 
 import { MiddlewareFunction, compose } from '@art-of-coding/lime-compose'
-import { IncomingMessage, ServerResponse, STATUS_CODES } from 'http'
+import { IncomingMessage, ServerResponse, STATUS_CODES, createServer } from 'http'
 import { Stream } from 'stream'
 
 import { HttpContext, createContext } from './HttpContext'
@@ -57,6 +57,22 @@ export class Application<S extends State = State> {
     }
 
     return this._composed
+  }
+
+  /**
+   * Create an HTTP server with request handler set to `app.callback()`.
+   */
+  public createServer () {
+    return createServer(this.callback())
+  }
+
+  /**
+   * Create an HTTP server with request handler set to `app.callback()`
+   * and start listening.
+   * @param  ...opts Options for the server listen() method
+   */
+  public async listen (...opts: any[]) {
+    return this.createServer().listen(...opts)
   }
 
   /**

@@ -4,17 +4,18 @@ import Slim, { HttpContext } from '../../index'
 import { MiddlewareFunction, NextFunction } from '@art-of-coding/lime-compose'
 
 export class Router {
-  private _respondWith405 = false
-  private _respondWith501 = false
+  public readonly respondWith405: boolean = false
+  public readonly respondWith501: boolean = false
+
   private _routes: Map<string, Map<string, Slim>> = new Map()
 
   public constructor (options: { respondWith405?: boolean, respondWith501?: boolean } = {}) {
     if (options.respondWith405) {
-      this._respondWith405 = true
+      this.respondWith405 = true
     }
 
     if (options.respondWith501) {
-      this._respondWith501 = true
+      this.respondWith501 = true
     }
   }
 
@@ -109,7 +110,7 @@ export class Router {
           await route.get(method).compose()(ctx)
         } else {
           // No valid method for this route
-          if (this._respondWith405) {
+          if (this.respondWith405) {
             // Respond with 405 Method Not Allowed
             ctx.res.statusCode = 405
           } else {
@@ -119,7 +120,7 @@ export class Router {
         }
       } else {
         // No valid route for this path
-        if (this._respondWith501) {
+        if (this.respondWith501) {
           // Respond with 501 Not Implemented
           ctx.res.statusCode = 501
         } else {

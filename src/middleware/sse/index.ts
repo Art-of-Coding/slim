@@ -79,8 +79,6 @@ export class ServerSentEvents<S extends State = State> extends EventEmitter {
   public add (ctx: HttpContext<S>) {
     if (ctx.raw.res.writable) {
       this._clients.add(ctx)
-
-      // NOTE: Consider using `WeakSet`?
       ctx.raw.res.once('close', () => this.remove(ctx))
       this.emit('add', ctx)
     }
@@ -121,7 +119,7 @@ export class ServerSentEvents<S extends State = State> extends EventEmitter {
       const { res } = ctx
 
       if (!res.headersSent) {
-       res.statusCode = 200
+       res.statusCode = this.statusCode
        res.body = null
        res.set('Connection', 'keep-alive')
        res.set('Cache-Control', 'no-cache')
