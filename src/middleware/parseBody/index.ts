@@ -6,7 +6,7 @@ import { NextFunction } from '@art-of-coding/lime-compose'
 export interface BodyParser<B = any> {
   contentType: string
   match (type: string): boolean
-  parse<U = B> (body: Buffer): U | Promise<U>
+  parse<U = B> (body: Buffer | string): U | Promise<U>
 }
 
 export function parseBody (...parsers: BodyParser[]) {
@@ -24,6 +24,12 @@ export function parseBody (...parsers: BodyParser[]) {
 
   return async (ctx: HttpContext, next: NextFunction) => {
     const { req } = ctx
+
+    if (!req.body) {
+      // What to do when there's no body?
+      return next()
+    }
+
     const contentType: string = req.raw.headers['content-type']
 
     if (!contentType) {
