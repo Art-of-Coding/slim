@@ -18,7 +18,7 @@ the middleware throws a status 413 (Payload Too Large) error.
 
 If `encoding` is set, the payload will be a string. Otherwise it is a `Buffer`.
 
-if `verifyLength` is true and the request contains a `Content-Length` header,
+If `verifyLength` is true and the request contains a `Content-Length` header,
 throws a status 400 (Bad Request) error if the body's byte length does not match
 the header value.
 
