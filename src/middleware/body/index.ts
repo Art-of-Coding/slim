@@ -3,7 +3,7 @@
 import { HttpContext, HttpError } from '../../index'
 import { NextFunction } from '@art-of-coding/lime-compose'
 
-export function body (opts: { maxPayloadSize?: number, encoding?: BufferEncoding, verifyLength?: boolean }) {
+export function body (opts: { maxPayloadSize?: number, encoding?: BufferEncoding, verifyLength?: boolean } = {}) {
   return async (ctx: HttpContext, next: NextFunction) => {
     const { maxPayloadSize, encoding } = opts
     const { req } = ctx
