@@ -1,10 +1,11 @@
 'use strict'
 
-import { HttpContext } from '../../index'
+import { HttpContext, HttpError } from '../../index'
 import { NextFunction } from '@art-of-coding/lime-compose'
 
-export function body () {
+export function body (opts: { maxPayloadSize?: number }) {
   return async (ctx: HttpContext, next: NextFunction) => {
+    const { maxPayloadSize } = opts
     const { req } = ctx
 
     return new Promise<void>((resolve, reject) => {
@@ -12,6 +13,14 @@ export function body () {
 
       const onData = (data: Buffer) => {
         body = Buffer.concat([ body, data ])
+
+        if (maxPayloadSize && body.byteLength > maxPayloadSize) {
+          req.raw.removeListener('data', onData)
+          req.raw.removeListener('error', onError)
+          req.raw.removeListener('end', onEnd)
+          req.raw.destroy()
+          reject(new HttpError(413))
+        }
       }
 
       const onError = (err: Error) => {
