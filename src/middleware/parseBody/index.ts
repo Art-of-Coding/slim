@@ -1,6 +1,6 @@
 'use strict'
 
-import { HttpContext } from '../../index'
+import { HttpContext, HttpError } from '../../index'
 import { NextFunction } from '@art-of-coding/lime-compose'
 
 export interface BodyParser<B = any> {
@@ -49,8 +49,8 @@ export function parseBody (...parsers: BodyParser[]) {
     try {
       newBody = parser.parse(req.body)
     } catch (e) {
-      // Error parsing body - what to do?
-      return next()
+      // Error parsing body
+      throw new HttpError(400, 'Unable to parse body')
     }
 
     req.body = newBody
