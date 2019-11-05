@@ -1,6 +1,6 @@
 {
   "name": "@art-of-coding/slim",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "A small web framework with async middleware",
   "main": "./dist/index.js",
   "author": "Michiel van der Velde <michiel@michielvdvelde.nl>",
