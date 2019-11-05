@@ -2,15 +2,15 @@
 
 Middleware for [Slim](https://github.com/Art-of-Coding/slim).
 
-This middleware assumes a previous middleware that sets `req.body` as a Buffer,
-such as [body](../body/README.md).
+This middleware assumes a previous middleware that sets `ctx.req.body` as a Buffer
+or string, such as [body](../body/README.md).
 
 ### API
 
 #### parseBody
 
 ```ts
-parseBody(...parsers: BodyParser<B = any>): MiddlewareFunction<HttpContext>
+parseBody(...parsers: BodyParser): MiddlewareFunction<HttpContext>
 ```
 
 Attempt to parse the body using one of the given parsers.
@@ -25,7 +25,7 @@ interface BodyParser<B = any> {
   // matches the given `Content-Type` header value to a parser, if any
   match (contentType: string): boolean
   // parses the raw body
-  parse<U = B> (body: Buffer): U | Promise<U>
+  parse<U = B> (body: Buffer | string): U | Promise<U>
 }
 ```
 
