@@ -3,10 +3,11 @@
 import { HttpContext, HttpError } from '../../index'
 import { NextFunction } from '@art-of-coding/lime-compose'
 
-export function body (opts: { maxPayloadSize?: number, encoding?: BufferEncoding }) {
+export function body (opts: { maxPayloadSize?: number, encoding?: BufferEncoding, verifyLength?: boolean }) {
   return async (ctx: HttpContext, next: NextFunction) => {
     const { maxPayloadSize, encoding } = opts
     const { req } = ctx
+    const verifyLength = typeof opts.verifyLength === 'boolean' ? opts.verifyLength : false
     const contentLength = req.raw.headers['content-length'] as unknown as number
 
     if ((maxPayloadSize && contentLength) && (contentLength > maxPayloadSize)) {
@@ -37,6 +38,10 @@ export function body (opts: { maxPayloadSize?: number, encoding?: BufferEncoding
       const onEnd = () => {
         req.raw.removeListener('error', onError)
         req.raw.removeListener('data', onData)
+
+        if (verifyLength && contentLength && contentLength !== body.byteLength) {
+          throw new HttpError(400)
+        }
 
         if (encoding) {
           req.body = body.toString(encoding)
