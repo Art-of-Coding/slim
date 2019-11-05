@@ -7,16 +7,16 @@ Middleware for [Slim](https://github.com/Art-of-Coding/slim).
 #### body
 
 ```ts
-body(opts: { maxPayloadLength?: number }): MiddlewareFunction<HttpContext>
+body(opts: { maxPayloadLength?: number, encoding?: BufferEncoding }): MiddlewareFunction<HttpContext>
 ```
 
 Gets the entire body of a request. Continues running middleware after the full
 body has been received.
 
-Body is stored as a `Buffer`, and no interpretation is done.
-
 If `maxPayloadSize` is set and the payload exceeds this number in bytes,
 the middleware throws a status 413 (Payload Too Large) error.
+
+If `encoding` is set, the payload will be a string. Otherwise it is a `Buffer`.
 
 ### Example
 
@@ -28,7 +28,7 @@ import { createServer } from 'http'
 const app = new Slim()
 
 app.use(
-  body(),
+  body({ maxPayload: 10 * 1024 * 1024 /* 10mb */ }),
   async ctx => {
     // body is now available as ctx.req.body (Buffer)
   }

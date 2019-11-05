@@ -34,26 +34,16 @@ interface BodyParser<B = any> {
 ```ts
 import Slim from './index'
 import body from './middleware/body'
-import parseBody, { BodyParser } from './middleware/parseBody'
+import parseBody from './middleware/parseBody'
+import JsonParser from './middleware/parseBody/parsers/json'
 import { createServer } from 'http'
 
 const app = new Slim()
-
-class JsonParser<B = { [key: string]: any }> implements BodyParser<B> {
-  public readonly contentType = 'application/json'
-  
-  public match (contentType: string) {
-    return this.contentType === contentType
-  }
-  
-  public parse (body: Buffer) {
-    return JSON.parse(body)
-  }
-}
+const jsonParser = new JsonParser()
 
 app.use(
   body(),
-  parseBody()
+  parseBody(jsonParser)
 )
 
 createServer(app1.callback()).listen(3000)
