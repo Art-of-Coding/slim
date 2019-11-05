@@ -11,7 +11,7 @@ body(opts: { maxPayloadLength?: number, encoding?: BufferEncoding, verifyLength?
 ```
 
 Gets the entire body of a request. Continues running middleware after the full
-body has been received.
+body has been received. The body will then be available as `ctx.req.body`.
 
 If `maxPayloadSize` is set and the payload exceeds this number in bytes,
 the middleware throws a status 413 (Payload Too Large) error.
