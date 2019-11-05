@@ -7,6 +7,11 @@ export function body (opts: { maxPayloadSize?: number, encoding?: BufferEncoding
   return async (ctx: HttpContext, next: NextFunction) => {
     const { maxPayloadSize, encoding } = opts
     const { req } = ctx
+    const contentLength = req.raw.headers['content-length'] as unknown as number
+
+    if ((maxPayloadSize && contentLength) && (contentLength > maxPayloadSize)) {
+      throw new HttpError(413)
+    }
 
     return new Promise<void>((resolve, reject) => {
       let body: Buffer = Buffer.alloc(0)
