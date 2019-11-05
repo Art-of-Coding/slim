@@ -11,7 +11,7 @@ export function body () {
       let body: Buffer = Buffer.alloc(0)
 
       const onData = (data: Buffer) => {
-        body = Buffer.concat([ data, data ])
+        body = Buffer.concat([ body, data ])
       }
 
       const onError = (err: Error) => {
