@@ -3,9 +3,9 @@
 import { HttpContext, HttpError } from '../../index'
 import { NextFunction } from '@art-of-coding/lime-compose'
 
-export function body (opts: { maxPayloadSize?: number }) {
+export function body (opts: { maxPayloadSize?: number, encoding?: BufferEncoding }) {
   return async (ctx: HttpContext, next: NextFunction) => {
-    const { maxPayloadSize } = opts
+    const { maxPayloadSize, encoding } = opts
     const { req } = ctx
 
     return new Promise<void>((resolve, reject) => {
@@ -30,9 +30,15 @@ export function body (opts: { maxPayloadSize?: number }) {
       }
 
       const onEnd = () => {
-        req.body = body
         req.raw.removeListener('error', onError)
         req.raw.removeListener('data', onData)
+
+        if (encoding) {
+          req.body = body.toString(encoding)
+        } else {
+          req.body = body
+        }
+
         resolve(next())
       }
 
