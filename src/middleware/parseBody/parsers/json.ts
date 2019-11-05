@@ -2,7 +2,7 @@
 
 import { BodyParser } from '../index'
 
-export class JsonParser<B = { [key: string]: any }> implements BodyParser<B> {
+export class JsonParser implements BodyParser {
   public readonly contentType: string
 
   public constructor (contentType: string = 'application/json') {

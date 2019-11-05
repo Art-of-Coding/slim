@@ -3,10 +3,10 @@
 import { HttpContext, HttpError } from '../../index'
 import { NextFunction } from '@art-of-coding/lime-compose'
 
-export interface BodyParser<B = any> {
+export interface BodyParser {
   contentType: string
   match (type: string): boolean
-  parse<U = B> (body: Buffer | string): U | Promise<U>
+  parse<U = any> (body: Buffer | string): U | Promise<U>
 }
 
 export function parseBody (...parsers: BodyParser[]) {
