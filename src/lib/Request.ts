@@ -13,12 +13,27 @@ export class Request {
   /** Request route parameters */
   public params: { [x: string]: string } = {}
 
+  /** Request body **/
+  private _body: any
+
   public constructor (req: IncomingMessage) {
     this.raw = req
     this.originalUrl = req.url
 
     const protocol = this.encrypted ? 'https' : 'http'
     this.url = new URL(`${protocol}://${this.host}${req.url}`)
+  }
+
+  public get body () {
+    return this._body
+  }
+
+  public getBody<U = any> (): U {
+    return this._body ? this._body : undefined
+  }
+
+  public set body (body: any) {
+    this._body = body
   }
 
   public get ip () {
