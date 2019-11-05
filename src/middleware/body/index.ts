@@ -15,7 +15,7 @@ export function body (opts: { maxPayloadSize?: number, encoding?: BufferEncoding
     }
 
     return new Promise<void>((resolve, reject) => {
-      let body: Buffer = Buffer.alloc(0)
+      let body: Buffer = Buffer.allocUnsafe(0)
 
       const onData = (data: Buffer) => {
         body = Buffer.concat([ body, data ])
