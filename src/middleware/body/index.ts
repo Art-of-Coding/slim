@@ -7,7 +7,7 @@ export function body (opts: { maxPayloadSize?: number, encoding?: BufferEncoding
   return async (ctx: HttpContext, next: NextFunction) => {
     const { maxPayloadSize, encoding } = opts
     const { req } = ctx
-    const verifyLength = typeof opts.verifyLength === 'boolean' ? opts.verifyLength : false
+    const verifyLength = opts.verifyLength || false
     const contentLength = req.raw.headers['content-length'] as unknown as number
 
     if ((maxPayloadSize && contentLength) && (contentLength > maxPayloadSize)) {
