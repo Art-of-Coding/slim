@@ -13,14 +13,18 @@ or string, such as [body](../body/README.md).
 parseBody(...parsers: BodyParser): MiddlewareFunction<HttpContext>
 ```
 
-Attempt to parse the body using one of the given parsers.
+Attempt to parse the body using one of the given parsers. If no parser matches
+the request's `Content-Type`, the middleware continues the stack without updating
+`ctx.req.body`.
+
+If a parser's `parse()` method throws an error, a 400 Bad Request is sent.
 
 A `BodyParser` is any object which satisfies the following interface:
 
 ```ts
 interface BodyParser<B = any> {
   // content type for this parser
-  // a parser may implement whildcards (e.g. application/*)
+  // a parser may implement wild cards (e.g. 'application/*') - it's up to you!
   contentType: string
   // matches the given `Content-Type` header value to a parser, if any
   match (contentType: string): boolean
