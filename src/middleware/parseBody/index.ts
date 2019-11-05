@@ -3,7 +3,7 @@
 import { HttpContext } from '../../index'
 import { NextFunction } from '@art-of-coding/lime-compose'
 
-interface BodyParser<B = any> {
+export interface BodyParser<B = any> {
   contentType: string
   match (type: string): boolean
   parse<U = B> (body: Buffer): U | Promise<U>
