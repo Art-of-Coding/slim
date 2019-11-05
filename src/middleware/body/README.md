@@ -7,7 +7,7 @@ Middleware for [Slim](https://github.com/Art-of-Coding/slim).
 #### body
 
 ```ts
-body(opts: { maxPayloadLength?: number, encoding?: BufferEncoding }): MiddlewareFunction<HttpContext>
+body(opts: { maxPayloadLength?: number, encoding?: BufferEncoding, verifyLength?: boolean }): MiddlewareFunction<HttpContext>
 ```
 
 Gets the entire body of a request. Continues running middleware after the full
@@ -17,6 +17,10 @@ If `maxPayloadSize` is set and the payload exceeds this number in bytes,
 the middleware throws a status 413 (Payload Too Large) error.
 
 If `encoding` is set, the payload will be a string. Otherwise it is a `Buffer`.
+
+if `verifyLength` is true and the request contains a `Content-Length` header,
+throws a status 400 (Bad Request) error if the body's byte length does not match
+the header value.
 
 ### Example
 
