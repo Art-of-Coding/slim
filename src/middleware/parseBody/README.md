@@ -22,7 +22,7 @@ If a parser's `parse()` method throws an error, a 400 Bad Request is sent.
 A `BodyParser` is any object which satisfies the following interface:
 
 ```ts
-interface BodyParser<B = any> {
+interface BodyParser {
   // content type for this parser
   // a parser may implement wild cards (e.g. 'application/*') - it's up to you!
   contentType: string
