@@ -40,10 +40,10 @@ export function body (opts: { maxPayloadSize?: number, encoding?: BufferEncoding
         req.raw.removeListener('data', onData)
 
         if (verifyLength && contentLength && contentLength !== body.byteLength) {
-          throw new HttpError(400)
+          return reject(new HttpError(400))
         }
 
-        if (encoding) {
+        if (encoding && Buffer.isBuffer(body)) {
           req.body = body.toString(encoding)
         } else {
           req.body = body
