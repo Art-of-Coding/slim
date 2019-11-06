@@ -4,7 +4,6 @@ import { HttpContext, HttpError } from '../../index'
 import { NextFunction } from '@art-of-coding/lime-compose'
 
 export interface BodyParser {
-  contentType: string
   match (type: string): boolean
   parse<U = any> (body: Buffer | string): U | Promise<U>
 }
