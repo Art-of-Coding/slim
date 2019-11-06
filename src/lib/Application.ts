@@ -154,11 +154,9 @@ export class Application<S extends State = State> {
       if (body instanceof Stream) {
         body.pipe(res.raw)
       } else {
-        await res.write(body)
+        await res.end(body)
       }
     }
-
-    await res.end()
   }
 }
 
