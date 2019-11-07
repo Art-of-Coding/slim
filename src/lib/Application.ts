@@ -144,9 +144,7 @@ export class Application<S extends State = State> {
           res.set('Content-Type', contentType)
         }
       }
-    }
 
-    if (!res.headersSent) {
       res.raw.writeHead(res.statusCode)
     }
 
