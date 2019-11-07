@@ -23,9 +23,6 @@ A `BodyParser` is any object which satisfies the following interface:
 
 ```ts
 interface BodyParser {
-  // content type for this parser
-  // a parser may implement wild cards (e.g. 'application/*') - it's up to you!
-  contentType: string
   // matches the given `Content-Type` header value to a parser, if any
   match (contentType: string): boolean
   // parses the raw body
