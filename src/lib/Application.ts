@@ -133,6 +133,7 @@ export class Application<S extends State = State> {
       // Strip body if status code requires an empty body
       if (emptyStatus[res.statusCode]) {
         res.body = body = null
+        return res.end()
       }
 
       if (ctx.req.method === 'HEAD') {
