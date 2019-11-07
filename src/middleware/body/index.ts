@@ -7,8 +7,9 @@ export function body (opts: { maxPayloadSize?: number, encoding?: BufferEncoding
   return async (ctx: HttpContext, next: NextFunction) => {
     const { maxPayloadSize, encoding } = opts
     const { req } = ctx
+    const { raw } = req
     const verifyLength = opts.verifyLength || false
-    const contentLength = req.raw.headers['content-length'] as unknown as number
+    const contentLength = raw.headers['content-length'] ? parseInt(raw.headers['content-length']) : undefined
 
     if ((maxPayloadSize && contentLength) && (contentLength > maxPayloadSize)) {
       throw new HttpError(413)
@@ -21,23 +22,23 @@ export function body (opts: { maxPayloadSize?: number, encoding?: BufferEncoding
         body = Buffer.concat([ body, data ])
 
         if (maxPayloadSize && body.byteLength > maxPayloadSize) {
-          req.raw.removeListener('data', onData)
-          req.raw.removeListener('error', onError)
-          req.raw.removeListener('end', onEnd)
-          req.raw.destroy()
+          raw.removeListener('data', onData)
+          raw.removeListener('error', onError)
+          raw.removeListener('end', onEnd)
+          raw.destroy()
           reject(new HttpError(413))
         }
       }
 
       const onError = (err: Error) => {
-        req.raw.removeListener('end', onEnd)
-        req.raw.removeListener('data', onData)
+        raw.removeListener('end', onEnd)
+        raw.removeListener('data', onData)
         reject(err)
       }
 
       const onEnd = () => {
-        req.raw.removeListener('error', onError)
-        req.raw.removeListener('data', onData)
+        raw.removeListener('error', onError)
+        raw.removeListener('data', onData)
 
         if (verifyLength && contentLength && contentLength !== body.byteLength) {
           return reject(new HttpError(400))
@@ -52,9 +53,9 @@ export function body (opts: { maxPayloadSize?: number, encoding?: BufferEncoding
         resolve(next())
       }
 
-      req.raw.on('data', onData)
-      req.raw.once('error', onError)
-      req.raw.once('end', onEnd)
+      raw.on('data', onData)
+      raw.once('error', onError)
+      raw.once('end', onEnd)
     })
   }
 }
