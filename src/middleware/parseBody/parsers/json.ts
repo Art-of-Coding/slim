@@ -13,7 +13,7 @@ export class JsonParser implements BodyParser {
     return contentType.startsWith(this.contentType)
   }
 
-  public parse<U = any> (body: Buffer | string) {
+  public parse<U = any> (body: Buffer | string): U {
     return JSON.parse(Buffer.isBuffer(body) ? body.toString() : body)
   }
 }
