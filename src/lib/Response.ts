@@ -58,7 +58,7 @@ export class Response {
       body = String(body)
     }
 
-    if (body === null) {
+    if (body === null || body === undefined) {
       this.remove('Content-Type', 'Transfer-Encoding', 'Content-Length')
     } else if (typeof body === 'string') {
       this.setIfNotSet('Content-Type', 'text/plain')
