@@ -154,6 +154,8 @@ export class Application<S extends State = State> {
       } else {
         await res.end(body)
       }
+    } else {
+      await res.end()
     }
   }
 }
